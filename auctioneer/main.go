@@ -11,12 +11,11 @@ import (
 	"net/http"
 )
 
-
 func main() {
 	svc := service.AuctionService{}
-	addBidderHandler := httptransport.NewServer(endpoints.MakeAddBidderEndpoint(svc), decodeAddBidderRequest, encodeResponse)
-	getBidderListHandler := httptransport.NewServer(endpoints.MakeGetBidderListEndpoint(svc), decodeGetBidderListRequest, encodeResponse)
-	findWinnerHandler := httptransport.NewServer(endpoints.MakeFindWinnerEndpoint(svc), decodeFindWinnerRequest, encodeResponse)
+	addBidderHandler := httptransport.NewServer(endpoints.MakeAddBidderEndpoint(&svc), decodeAddBidderRequest, encodeResponse)
+	getBidderListHandler := httptransport.NewServer(endpoints.MakeGetBidderListEndpoint(&svc), decodeGetBidderListRequest, encodeResponse)
+	findWinnerHandler := httptransport.NewServer(endpoints.MakeFindWinnerEndpoint(&svc), decodeFindWinnerRequest, encodeResponse)
 	http.Handle("/addbidder", addBidderHandler)
 	http.Handle("/getbidderlist", getBidderListHandler)
 	http.Handle("/findwinner", findWinnerHandler)

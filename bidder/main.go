@@ -42,7 +42,7 @@ func main() {
 	handleErr(err, "")
 
 	svc := service.BiddingService{Name: bidderName, Delay: delayInt}
-	bidHandler := httptransport.NewServer(endpoints.MakeBidEndpoint(svc), decodeBidRequest, encodeResponse)
+	bidHandler := httptransport.NewServer(endpoints.MakeBidEndpoint(&svc), decodeBidRequest, encodeResponse)
 	http.Handle("/bid", bidHandler)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

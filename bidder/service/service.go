@@ -15,9 +15,8 @@ type BiddingService struct {
 	Delay int
 }
 
-func (b BiddingService) Bid(auctionID string) (string, float64, error) {
+func (b *BiddingService) Bid(auctionID string) (string, float64, error) {
 	time.Sleep(time.Duration(b.Delay) * time.Millisecond)
 	value, err := strconv.ParseFloat(os.Getenv("BIDDER_VALUE"), 64)
-	return b.Name+ "-" + auctionID, value, err
+	return b.Name + "-" + auctionID, value, err
 }
-

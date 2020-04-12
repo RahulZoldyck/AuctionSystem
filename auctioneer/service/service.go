@@ -17,27 +17,31 @@ type Service interface {
 	FindWinner(auctionID string) (string, float64, error)
 }
 
-type AuctionService struct{
-	bidders []model.Bidder
+type AuctionService struct {
+	bidders map[int]string
 }
 
-func (a AuctionService) AddBidder(name string, port int) (int, error) {
-	a.bidders = append(a.bidders, model.Bidder{Port: port, Name: name})
+func (a *AuctionService) AddBidder(name string, port int) (int, error) {
+	a.bidders[port] = name
 	return 1, nil
 }
-func (a AuctionService) GetBidderList() ([]model.Bidder, error) {
-	return a.bidders, nil
+func (a *AuctionService) GetBidderList() ([]model.Bidder, error) {
+	var bidderArr []model.Bidder
+	for port, name := range a.bidders {
+		bidderArr = append(bidderArr, model.Bidder{Port: port, Name: name})
+	}
+	return bidderArr, nil
 }
-func (a AuctionService) FindWinner(auctionID string) (string, float64, error) {
+func (a *AuctionService) FindWinner(auctionID string) (string, float64, error) {
 	ch := make(chan model.Bid, len(a.bidders))
 	errCh := make(chan error)
-	for _, v := range a.bidders {
+	for port, _ := range a.bidders {
 		go func() {
 			reqBody, err := json.Marshal(api.BidRequest{AuctionId: auctionID})
 			if err != nil {
 				errCh <- err
 			}
-			req, err := http.NewRequest("POST", "http://localhost:"+string(v.Port), bytes.NewBuffer(reqBody))
+			req, err := http.NewRequest("POST", "http://localhost:"+string(port), bytes.NewBuffer(reqBody))
 			if err != nil {
 				errCh <- err
 			}
@@ -83,5 +87,3 @@ func (a AuctionService) FindWinner(auctionID string) (string, float64, error) {
 	}
 
 }
-
-
